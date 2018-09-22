@@ -3,37 +3,33 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AutoItX3Lib;
+using TestStack.White;
+using TestStack.White.UIItems.WindowItems;
+using TestStack.White.UIItems;
 
 namespace addressbood_white
 {
     public class ApplicationManager
     {
         public static string WINTITLE = "Free Address Book";
-        private AutoItX3 aux;
+
         private GroupHelper groupHelper;
         public ApplicationManager()
         {
-            aux = new AutoItX3();
-            aux.Run(@"C:\Users\e.frolova\Desktop\AddressbookNative4\AddressBook.exe", "", aux.SW_SHOW);
-            aux.WinWait(WINTITLE);
-            aux.WinActivate(WINTITLE);
-            aux.WinWaitActive(WINTITLE);
+            Application app = Application.Launch(@"C:\Users\e.frolova\Desktop\AddressbookNative4\AddressBook.exe");
+            MainWindow = app.GetWindow(WINTITLE);
+            
             groupHelper = new GroupHelper(this);
         }
 
         public void Stop()
         {
-            aux.ControlClick("WINTITLE", "", "WindowsForms10.BUTTON.app.0.62e44910");
+            MainWindow.Get<Button>("uxExitAddressButton").Click();
         }
 
-        public AutoItX3 Aux
-        {
-            get
-            {
-                return aux;
-            }
-        }
+        public Window MainWindow { get; private set; }
+
+ 
 
         public GroupHelper Groups
         {

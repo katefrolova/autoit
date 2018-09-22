@@ -12,7 +12,7 @@ namespace addressbood_white
             List<GroupData> oldGroups = app.Groups.GetGroupList();
             GroupData newGroup = new GroupData()
             {
-                Name = "test"
+                Name = "white"
             };
 
             app.Groups.Add(newGroup);
