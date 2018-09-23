@@ -3,6 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TestStack.White;
+using TestStack.White.UIItems;
+using TestStack.White.WindowsAPI;
+using TestStack.White.InputDevices;
+using TestStack.White.UIItems.WindowItems;
+using TestStack.White.UIItems.TreeItems;
+using TestStack.White.UIItems.Finders;
+using System.Windows.Automation;
 
 namespace addressbood_white
 {
@@ -14,40 +22,42 @@ namespace addressbood_white
         public List<GroupData> GetGroupList()
         {
             List<GroupData> list = new List<GroupData>();
-            OpenGroupsDialogue();
-            string count = aux.ControlTreeView(GROUPWINTITLE, "", "WindowsForms10.SysTreeView32.app.0.62e4491", "GetItemCount",
-                "#0", "");
-            for (int i = 0; i < int.Parse(count); i++)
+            Window dialogue = OpenGroupsDialogue();
+            Tree tree = dialogue.Get<Tree>("uxAddressTreeView");
+            TreeNode root = tree.Nodes[0];
+            foreach (TreeNode item in root.Nodes)
             {
-                string item = aux.ControlTreeView(GROUPWINTITLE, "", "WindowsForms10.SysTreeView32.app.0.62e4491", "GetText",
-                "#0|#" + i, "");
                 list.Add(new GroupData()
                 {
-                    Name = item
+                    Name = item.Text
                 });
-            }
-            CloseGroupsDialogue();
+            }                
+
+            CloseGroupsDialogue(dialogue);
             return list;
         }
 
         public void Add(GroupData newGroup)
         {
-            OpenGroupsDialogue();
-            aux.ControlClick(GROUPWINTITLE, "", "WindowsForms10.BUTTON.app.0.62e4493");
-            aux.Send(newGroup.Name);
-            aux.Send("{ENTER}");
-            CloseGroupsDialogue();
+            Window dialogue = OpenGroupsDialogue();
+            dialogue.Get<Button>("uxNewAddressButton").Click();
+            TextBox textBox = (TextBox) dialogue.Get(SearchCriteria.ByControlType(ControlType.Edit));
+            textBox.Enter(newGroup.Name);
+            Keyboard.Instance.PressSpecialKey(KeyboardInput.SpecialKeys.RETURN);
+
+           // aux.Send("{ENTER}");
+            CloseGroupsDialogue(dialogue);
         }
 
-        private void CloseGroupsDialogue()
+        private void CloseGroupsDialogue(Window dialogue)
         {
-            aux.ControlClick(GROUPWINTITLE, "", "WindowsForms10.BUTTON.app.0.62e4494");
+            manager.MainWindow.Get<Button>("uxCloseAddressButton").Click();
         }
 
-        private void OpenGroupsDialogue()
+        private Window OpenGroupsDialogue()
         {
-            aux.ControlClick(WINTITLE, "", "WindowsForms10.BUTTON.app.0.62e44912");
-            aux.WinWait("Group editor");
+            manager.MainWindow.Get<Button>("groupButton").Click();
+            return manager.MainWindow.ModalWindow(GROUPWINTITLE);
         }
     }
 }
