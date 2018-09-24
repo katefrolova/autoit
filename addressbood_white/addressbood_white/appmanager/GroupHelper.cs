@@ -59,5 +59,22 @@ namespace addressbood_white
             manager.MainWindow.Get<Button>("groupButton").Click();
             return manager.MainWindow.ModalWindow(GROUPWINTITLE);
         }
+
+        public void RemoveGroup(int indexOfGroupToDelete)
+        {
+            var dialogue = OpenGroupsDialogue();
+            var tree = dialogue.Get<Tree>("uxAddressTreeView");
+            var root = tree.Nodes[0];
+            root.Nodes[indexOfGroupToDelete].Click();
+            Window removeGroupDialogue = ClickDeleteButton(dialogue);
+            removeGroupDialogue.Get<Button>("uxOKAddressButton").Click();
+            CloseGroupsDialogue(dialogue);
+        }
+        private Window ClickDeleteButton(Window dialogue)
+        {
+            dialogue.Get<Button>("uxDeleteAddressButton").Click();
+            return dialogue.ModalWindow("Delete group");
+        }
+
     }
 }
